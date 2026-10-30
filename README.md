@@ -52,6 +52,7 @@ Lab network: **Host-Only `192.168.56.0/24`** (isolated from real LAN)
 | 6 | [PHASE-6-SOAR-RESPONSE.md](PHASE-6-SOAR-RESPONSE.md) | TheHive/Cortex triage, response, incident postmortems |
 
 Full analysis & roadmap: [PLAN.md](PLAN.md)
+Study resources (free + paid, mapped to phases): [LEARNING-PATH.md](LEARNING-PATH.md)
 
 ---
 
