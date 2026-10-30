@@ -1,0 +1,33 @@
+# Secrets & credentials — never commit
+*.key
+*.pem
+*.p12
+*.pfx
+.env
+*secret*
+*password*
+api-key*
+
+# Local SIEM / tool data (large, machine-specific)
+wazuh-docker/
+thehive/data/
+*-data/
+*.pcap
+eve.json
+ossec.log
+
+# VM artifacts
+*.vdi
+*.vmdk
+*.ova
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Real captured samples / IOCs (keep out of a public repo)
+samples/
+iocs-raw/

@@ -1,0 +1,39 @@
+title: Suspicious PowerShell Encoded / Download Cradle
+id: 7b2c1d40-50c1-4ab0-9001-soc0lab00001
+status: experimental
+description: >
+  Detects PowerShell launched with encoded commands, download cradles, or
+  base64 payloads - common execution vectors (ATT&CK T1059.001).
+author: soc-lab
+date: 2026-10-30
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_cmd:
+    CommandLine|contains:
+      - '-enc '
+      - '-EncodedCommand'
+      - 'DownloadString'
+      - 'FromBase64String'
+      - 'IEX '
+  condition: selection_img and selection_cmd
+falsepositives:
+  - Legitimate admin scripts using encoded commands (baseline and exclude)
+level: high
+tags:
+  - attack.execution
+  - attack.t1059.001
+
+# Convert for the Wazuh dashboard (OpenSearch):
+#   pipx install sigma-cli && sigma plugin install opensearch
+#   sigma convert -t opensearch -p sysmon t1059_001_susp_powershell.yml
+#
+# This Sigma rule is the portable source-of-truth; the runtime detection
+# lives in ../wazuh/local_rules.xml (rule id 100101).

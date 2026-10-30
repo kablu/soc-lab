@@ -1,0 +1,48 @@
+<!--
+  Home SOC Lab - custom Wazuh rules
+  Deploy to: /var/ossec/etc/rules/local_rules.xml  (wazuh.manager container)
+  Reload:    docker compose restart wazuh.manager
+  Test:      docker compose exec wazuh.manager /var/ossec/bin/wazuh-logtest
+  Rule IDs:  use the 100000+ range (reserved for user rules).
+  Keep this file in sync with ../coverage.md
+-->
+<group name="sysmon,attack,custom_soc,">
+
+  <!-- T1059.001  Suspicious PowerShell: encoded / download cradle / hidden window -->
+  <rule id="100101" level="12">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.image" type="pcre2">(?i)\\powershell\.exe$|\\pwsh\.exe$</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)-enc\s|-encodedcommand|downloadstring|iex\s|frombase64string|-nop\s.*-w\shidden</field>
+    <description>T1059.001: Suspicious PowerShell (encoded / download cradle / hidden)</description>
+    <mitre><id>T1059.001</id></mitre>
+  </rule>
+
+  <!-- T1003.001  LSASS process access with suspicious granted-access mask -->
+  <rule id="100102" level="14">
+    <if_group>sysmon_event_10</if_group>
+    <field name="win.eventdata.targetImage" type="pcre2">(?i)\\lsass\.exe$</field>
+    <field name="win.eventdata.grantedAccess" type="pcre2">0x1010|0x1410|0x1438|0x143a|0x1fffff</field>
+    <description>T1003.001: Suspicious LSASS access (possible credential dump)</description>
+    <mitre><id>T1003.001</id></mitre>
+  </rule>
+
+  <!-- T1053.005  Scheduled task created via schtasks.exe -->
+  <rule id="100103" level="10">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.image" type="pcre2">(?i)\\schtasks\.exe$</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)/create</field>
+    <description>T1053.005: Scheduled task created via schtasks</description>
+    <mitre><id>T1053.005</id></mitre>
+  </rule>
+
+  <!-- T1059.001 + T1566.001  FP-tuned: PowerShell spawned by an Office app (macro) -->
+  <rule id="100104" level="13">
+    <if_sid>100101</if_sid>
+    <field name="win.eventdata.parentImage" type="pcre2">(?i)\\(winword|excel|outlook|powerpnt)\.exe$</field>
+    <description>T1059.001: PowerShell spawned by Office app (macro execution)</description>
+    <mitre><id>T1059.001</id><id>T1566.001</id></mitre>
+  </rule>
+
+  <!-- Add new rules below as you work through coverage.md -->
+
+</group>
